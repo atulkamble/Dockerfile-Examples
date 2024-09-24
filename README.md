@@ -39,12 +39,12 @@ For **Amazon Linux 2**:
 
 2. Install Docker:
    ```bash
-   sudo amazon-linux-extras install docker -y
+   sudo yum install docker -y
    ```
 
 3. Start Docker service and enable it to run on startup:
    ```bash
-   sudo service docker start
+   sudo systemctl start docker
    sudo systemctl enable docker
    ```
 
@@ -53,39 +53,20 @@ For **Amazon Linux 2**:
    sudo usermod -a -G docker ec2-user
    ```
 
-   (You may need to log out and log back in for this to take effect.)
-
-For **Ubuntu**:
-
-1. Update the package manager:
-   ```bash
-   sudo apt-get update
-   ```
-
-2. Install Docker:
-   ```bash
-   sudo apt-get install docker.io -y
-   ```
-
-3. Start Docker service:
-   ```bash
-   sudo systemctl start docker
-   sudo systemctl enable docker
-   ```
 
 #### **4. Install Git and Clone Your Application Code**
 
 1. Install Git:
    ```bash
    sudo yum install git -y   # Amazon Linux
-   sudo apt-get install git -y  # Ubuntu
    ```
 
 2. Clone your repository containing the Dockerfile and application code:
    ```bash
-   git clone https://github.com/yourusername/your-repo.git
-   cd your-repo
+   git clone https://github.com/atulkamble/Dockerfile-Examples.git
+   cd Dockerfile-Examples
    ```
+   
 ### **Topics Covered:**
 1. **Basic Dockerfile Setup**:
    - Python (Flask)
