@@ -214,6 +214,58 @@ if __name__ == '__main__':
 Flask==2.1.2
 ```
 
+The error you're seeing, `ModuleNotFoundError: No module named 'flask'`, indicates that the Flask module is not installed in your Python environment.
+
+To resolve this, you can install Flask in your environment using the following steps:
+
+### Step 1: Activate the Correct Python Environment
+If you are using a virtual environment, activate it first. If not, you can either install Flask globally or create a virtual environment to isolate dependencies.
+
+#### For a virtual environment:
+If you haven't created a virtual environment, you can do so with:
+```bash
+python3 -m venv venv
+```
+
+Activate the virtual environment:
+```bash
+source venv/bin/activate
+```
+
+### Step 2: Install Flask
+Once the environment is active, install Flask:
+```bash
+pip install flask
+```
+
+### Step 3: Verify Installation
+Ensure that Flask is installed by checking the installed packages:
+```bash
+pip list | grep Flask
+```
+
+### Step 4: Run Your Application Again
+Now, try running your application:
+```bash
+python app.py
+```
+
+This should resolve the `ModuleNotFoundError` for Flask.
+
+### Step 5: Add Dependencies to `requirements.txt` (Optional but Recommended)
+If you're deploying this app using Docker or to another environment, make sure you add Flask to a `requirements.txt` file:
+```bash
+pip freeze > requirements.txt
+```
+
+In your `Dockerfile`, ensure you have a step that installs these dependencies:
+```dockerfile
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+```
+
+Let me know if you need further assistance!
+
 ### **2. Dockerfile Example for Node.js (Express) App**
 
 **Dockerfile:**
