@@ -66,6 +66,11 @@ For **Amazon Linux 2**:
    ```
    git config --global user.name "Atul Kamble"
    git config --global user.email "atul_kamble@hotmail.com"
+   git config --global credential.helper store
+   nano ~/.git-credentials
+   // copy
+   https://atuljkamble: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@github.com
+   // save
    ```
    
 4. Clone your repository containing the Dockerfile and application code:
