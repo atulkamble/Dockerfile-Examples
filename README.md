@@ -12,17 +12,20 @@ Here's a step-by-step guide on creating `Dockerfile` examples and setting them u
 
 #### **1. Launch an EC2 Instance**
 1. Go to your AWS Management Console.
-2. Launch a new EC2 instance using an Amazon Linux 2 or Ubuntu AMI.
+2. Launch a new EC2 instance using an Amazon Linux 2
 3. Choose instance type (e.g., t2.micro).
-4. Configure security groups:
-   - Allow inbound traffic on port 22 for SSH access.
-   - Allow port 5000 (for Flask) or port 3000 (for Node.js) for external access to your app.
+4. Create keypair and select | key.pem
+5. Configure SG - security groups:
+   - Allow Inbound | SSH - 22, HTTP - 80, HTTPS - 443, FLASK- 5000, NodeJS - 3000
 
 #### **2. Connect to the EC2 Instance**
 
 1. SSH into your EC2 instance:
    ```bash
+   cd Downloads
+   chmod 400 key.pem
    ssh -i your-key.pem ec2-user@<ec2-public-ip>
+   example: ssh -i "key.pem" ec2-user@ec2-52-90-17-121.compute-1.amazonaws.com
    ```
 
 #### **3. Install Docker on EC2 Instance**
