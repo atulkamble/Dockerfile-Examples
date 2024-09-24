@@ -59,9 +59,16 @@ For **Amazon Linux 2**:
 1. Install Git:
    ```bash
    sudo yum install git -y   # Amazon Linux
+   git --version
    ```
 
-2. Clone your repository containing the Dockerfile and application code:
+2. Configure Git Credentials
+   ```
+   git config --global user.name "Atul Kamble"
+   git config --global user.email "atul_kamble@hotmail.com"
+   ```
+   
+4. Clone your repository containing the Dockerfile and application code:
    ```bash
    git clone https://github.com/atulkamble/Dockerfile-Examples.git
    cd Dockerfile-Examples
