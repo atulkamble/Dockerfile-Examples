@@ -2,18 +2,6 @@
 
 Here's the suggested structure for your repository on Dockerfile examples:
 
----
-
-### **Repository Name:**
-`Dockerfile-Examples`
-
----
-
-### **About:**
-This repository contains a collection of advanced Dockerfile examples for various types of applications, demonstrating best practices, multi-stage builds, optimizations, and configurations. These examples can be used as a reference for building and deploying applications using Docker in production environments. Each example is tailored to provide a minimal yet powerful setup, catering to Python, Node.js, Java, PHP, .NET Core, and more.
-
----
-
 ### **Topics Covered:**
 1. **Basic Dockerfile Setup**:
    - Python (Flask)
