@@ -182,6 +182,7 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install dependencies
+RUN pip install flask
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
