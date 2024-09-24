@@ -239,4 +239,127 @@ app.listen(3000, () => {
   }
 }
 ```
+Here are examples of basic `Dockerfile` setups for different types of applications:
 
+### 1. **Python Application (Flask)**
+
+```Dockerfile
+# Base image
+FROM python:3.9-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the requirements file into the container
+COPY requirements.txt .
+
+# Install the dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE 5000
+
+# Set the command to run the app
+CMD ["python", "app.py"]
+```
+
+### 2. **Node.js Application (Express)**
+
+```Dockerfile
+# Base image
+FROM node:16-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and install dependencies
+COPY package*.json ./
+RUN npm install --production
+
+# Copy application code
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Command to run the application
+CMD ["node", "app.js"]
+```
+
+### 3. **Java Application (Spring Boot)**
+
+```Dockerfile
+# Base image
+FROM openjdk:17-jdk-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the jar file
+COPY target/myapp.jar /app/myapp.jar
+
+# Expose port 8080
+EXPOSE 8080
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "myapp.jar"]
+```
+
+### 4. **PHP Application (Laravel)**
+
+```Dockerfile
+# Base image
+FROM php:8.1-fpm-alpine
+
+# Set working directory
+WORKDIR /var/www
+
+# Install dependencies
+RUN docker-php-ext-install pdo pdo_mysql
+
+# Copy application code
+COPY . .
+
+# Install composer and dependencies
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN composer install --no-dev --optimize-autoloader
+
+# Expose port 9000 for PHP-FPM
+EXPOSE 9000
+
+# Start the PHP-FPM server
+CMD ["php-fpm"]
+```
+
+### 5. **.NET Core Application**
+
+```Dockerfile
+# Base image for build
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+WORKDIR /app
+EXPOSE 80
+
+# Copy the application files
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+WORKDIR /src
+COPY . .
+
+# Restore the dependencies and build the app
+RUN dotnet restore "MyApp/MyApp.csproj"
+RUN dotnet build "MyApp/MyApp.csproj" -c Release -o /app/build
+
+# Publish the app
+FROM build AS publish
+RUN dotnet publish "MyApp/MyApp.csproj" -c Release -o /app/publish
+
+# Create the final image
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "MyApp.dll"]
+```
+
+These Dockerfiles demonstrate basic setups. You can modify them based on specific needs such as adding environment variables, using multi-stage builds for optimization, or using custom configurations for the applications.
