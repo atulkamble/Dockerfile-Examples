@@ -363,3 +363,287 @@ ENTRYPOINT ["dotnet", "MyApp.dll"]
 ```
 
 These Dockerfiles demonstrate basic setups. You can modify them based on specific needs such as adding environment variables, using multi-stage builds for optimization, or using custom configurations for the applications.
+
+Here are some **advanced Dockerfile examples** covering various use cases, optimizations, and multi-stage builds for better performance, security, and flexibility.
+
+---
+
+### **1. Python Application with Multi-stage Build and Caching**
+
+This Dockerfile demonstrates caching Python dependencies and using multi-stage builds for smaller final images.
+
+```Dockerfile
+# Stage 1: Build stage with dependencies
+FROM python:3.9-slim AS builder
+
+# Install pip and set up environment
+RUN apt-get update && apt-get install -y build-essential
+WORKDIR /app
+
+# Copy only requirements to leverage Docker caching
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+# Stage 2: Final stage, minimal runtime environment
+FROM python:3.9-slim
+
+# Set environment variables for Python
+ENV PATH=/root/.local/bin:$PATH
+ENV PYTHONUNBUFFERED=1
+
+# Copy dependencies from build stage
+COPY --from=builder /root/.local /root/.local
+
+# Copy the application code
+COPY . /app
+WORKDIR /app
+
+# Expose the port Flask will run on
+EXPOSE 5000
+
+# Command to run the app
+CMD ["python", "app.py"]
+```
+
+### **2. Node.js Application with Non-root User and Multi-stage Build**
+
+This Dockerfile sets up a Node.js app and adds security by running the container as a non-root user.
+
+```Dockerfile
+# Stage 1: Build stage
+FROM node:16-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy application source code
+COPY . .
+
+# Stage 2: Final stage with non-root user
+FROM node:16-alpine
+
+# Create non-root user
+RUN addgroup -S nodegroup && adduser -S nodeuser -G nodegroup
+
+# Set working directory
+WORKDIR /app
+
+# Copy built application code from builder stage
+COPY --from=builder /app /app
+
+# Change ownership of the application
+RUN chown -R nodeuser:nodegroup /app
+
+# Use non-root user
+USER nodeuser
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Command to run the app
+CMD ["node", "app.js"]
+```
+
+### **3. Java Application with Multi-stage Build (Maven and JAR)**
+
+This Dockerfile demonstrates a multi-stage build for a Java Spring Boot application, leveraging Maven for dependency resolution and reducing the final image size.
+
+```Dockerfile
+# Stage 1: Build the application with Maven
+FROM maven:3.8.4-openjdk-17 AS builder
+
+# Set the working directory
+WORKDIR /build
+
+# Copy the pom.xml and resolve dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copy the source code and build the JAR file
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Stage 2: Create the final image with JRE
+FROM openjdk:17-jdk-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the JAR file from the builder stage
+COPY --from=builder /build/target/myapp.jar /app/myapp.jar
+
+# Expose the application's port
+EXPOSE 8080
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "myapp.jar"]
+```
+
+### **4. PHP Application (Laravel) with Optimized Apache Setup**
+
+This Dockerfile sets up a Laravel application with Apache and includes optimizations for caching dependencies and permissions.
+
+```Dockerfile
+# Base image
+FROM php:8.1-apache
+
+# Enable required PHP extensions and Apache modules
+RUN docker-php-ext-install pdo pdo_mysql && a2enmod rewrite
+
+# Set the working directory
+WORKDIR /var/www/html
+
+# Install Composer (dependency manager for PHP)
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Copy application code and install dependencies
+COPY . /var/www/html
+RUN composer install --optimize-autoloader --no-dev
+
+# Set ownership and permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Expose port 80 for Apache
+EXPOSE 80
+
+# Start Apache server
+CMD ["apache2-foreground"]
+```
+
+### **5. Multi-container Docker Setup (Docker Compose)**
+
+This example uses Docker Compose to manage multiple services (Nginx, Node.js, and a PostgreSQL database) within a single setup.
+
+**Dockerfile for Node.js:**
+```Dockerfile
+FROM node:16-alpine
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+**Docker Compose Configuration:**
+```yaml
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - nodejs
+
+  nodejs:
+    build: ./node-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
+```
+
+### **6. Using Build Arguments and Environment Variables**
+
+This Dockerfile makes use of build arguments (`ARG`) and environment variables (`ENV`), which allow configuration during build and runtime.
+
+```Dockerfile
+# Base image
+FROM python:3.9-slim
+
+# Build arguments (passed during docker build)
+ARG ENVIRONMENT=production
+
+# Environment variables (available during container runtime)
+ENV ENVIRONMENT=${ENVIRONMENT}
+ENV APP_PORT=5000
+
+# Set the working directory
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Expose the application port
+EXPOSE ${APP_PORT}
+
+# Run the app
+CMD ["python", "app.py"]
+```
+
+You can build the image with:
+```bash
+docker build --build-arg ENVIRONMENT=staging -t my-app .
+```
+
+### **7. Using Health Checks in Dockerfile**
+
+This Dockerfile adds a health check to ensure that the application inside the container is running and healthy.
+
+```Dockerfile
+FROM node:16-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy and install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy application code
+COPY . .
+
+# Expose the application port
+EXPOSE 3000
+
+# Add a health check to ensure the app is responding
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD curl --fail http://localhost:3000 || exit 1
+
+# Start the application
+CMD ["npm", "start"]
+```
+
+---
+
+### **Best Practices for Advanced Dockerfiles:**
+1. **Use Multi-stage Builds:** Reduces image size by separating build dependencies from runtime dependencies.
+2. **Use Non-root User:** Enhances security by avoiding running containers as root.
+3. **Leverage Caching:** Optimize builds by leveraging Docker’s layer caching mechanism (e.g., copy `requirements.txt` first before copying the rest).
+4. **Health Checks:** Monitor and restart unhealthy containers automatically.
+5. **Use Build Arguments and Environment Variables:** Allow flexible configuration at both build and runtime.
+6. **Minimal Base Images:** Choose lightweight base images (e.g., `alpine`) to reduce image size and attack surface.
+7. **Clean Up:** Remove temporary files, packages, or build tools after installation to keep the final image clean.
+
+These advanced Dockerfile techniques ensure your containerized applications are more efficient, secure, and production-ready.
