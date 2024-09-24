@@ -2,32 +2,6 @@
 
 Here's the suggested structure for your repository on Dockerfile examples:
 
-### **Topics Covered:**
-1. **Basic Dockerfile Setup**:
-   - Python (Flask)
-   - Node.js (Express)
-   - Java (Spring Boot)
-   - PHP (Laravel)
-   - .NET Core Application
-
-2. **Advanced Dockerfile Techniques**:
-   - Multi-stage builds for optimized image sizes
-   - Caching strategies for faster builds
-   - Running containers as non-root users for security
-   - Health checks for container monitoring
-   - Using build arguments and environment variables
-
-3. **Docker Compose for Multi-Container Applications**:
-   - Setting up multiple services (e.g., Nginx, Node.js, PostgreSQL) using `docker-compose.yml`
-
-4. **Best Practices**:
-   - Image size optimizations
-   - Security considerations
-   - Automated health checks
-   - Auto-restarting containers on failure
-
----
-
 Let me know if you'd like further refinements or additions to the repo structure!
 
 Here's a step-by-step guide on creating `Dockerfile` examples and setting them up on an EC2 instance:
@@ -109,6 +83,31 @@ For **Ubuntu**:
    git clone https://github.com/yourusername/your-repo.git
    cd your-repo
    ```
+### **Topics Covered:**
+1. **Basic Dockerfile Setup**:
+   - Python (Flask)
+   - Node.js (Express)
+   - Java (Spring Boot)
+   - PHP (Laravel)
+   - .NET Core Application
+
+2. **Advanced Dockerfile Techniques**:
+   - Multi-stage builds for optimized image sizes
+   - Caching strategies for faster builds
+   - Running containers as non-root users for security
+   - Health checks for container monitoring
+   - Using build arguments and environment variables
+
+3. **Docker Compose for Multi-Container Applications**:
+   - Setting up multiple services (e.g., Nginx, Node.js, PostgreSQL) using `docker-compose.yml`
+
+4. **Best Practices**:
+   - Image size optimizations
+   - Security considerations
+   - Automated health checks
+   - Auto-restarting containers on failure
+
+---
 
 #### **5. Build the Docker Image**
 
