@@ -71,6 +71,7 @@ For **Amazon Linux 2**:
    // copy
    https://atuljkamble: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@github.com
    // save
+   git config --global --list
    ```
    
 4. Clone your repository containing the Dockerfile and application code:
